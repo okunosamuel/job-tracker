@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231d3b53'/><path d='M9 12h14v11H9zM13 12V9h6v3' fill='none' stroke='%23f3ede3' stroke-width='2'/></svg>">
+<style>
+:root{
+  --bg:#f6f2ea; --panel:#fffdf9; --ink:#1f2328; --muted:#6b6458; --line:#e4ddd0;
+  --navy:#1d3b53; --rust:#b5651d; --rust-soft:#f6e6d6; --green:#2f7a4d; --green-soft:#e2f1e7;
+  --red:#b23b2e; --red-soft:#f8e1dd; --blue-soft:#e3ecf3; --chip:#efe9de; --shadow:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#14171b; --panel:#1c2026; --ink:#e9e5dd; --muted:#a39b8d; --line:#2c323a;
+    --navy:#9cc3e4; --rust:#e09a5a; --rust-soft:#3a2a1c; --green:#6cc492; --green-soft:#1d3428;
+    --red:#ee8a7d; --red-soft:#3d2320; --blue-soft:#1f2c38; --chip:#262b32; --shadow:none;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--navy)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+header.top h1{font-size:20px;margin:0;color:var(--navy);letter-spacing:.2px;font-weight:700}
+header.top .sub{color:var(--muted);font-size:13px}
+header.top .spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--bg)}
+.btn.small{padding:4px 9px;font-size:13px}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:22px;color:var(--navy);line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:12px;scrollbar-width:none}
+.tab{border:0;background:none;padding:9px 12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--ink);border-bottom-color:var(--rust);font-weight:600}
+.tab .n{font-size:12px;background:var(--chip);border-radius:10px;padding:1px 7px;margin-left:4px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filters input[type=search]{flex:1;min-width:180px}
+.filters input,.filters select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.filters label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.group-h{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;gap:8px;align-items:center}
+.group-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.card.strong{border-left:4px solid var(--rust)}
+.row1{display:flex;gap:10px;align-items:flex-start}
+.row1 .main{flex:1;min-width:0}
+.title{font-weight:600;font-size:16px;text-decoration:none;color:var(--ink)}
+.title:hover{color:var(--navy);text-decoration:underline}
+.star{color:var(--rust)}
+.meta{color:var(--muted);font-size:13.5px;margin-top:1px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.chip{font-size:12px;background:var(--chip);border-radius:6px;padding:2px 7px;color:var(--ink)}
+.chip.cat-fulltime{background:var(--blue-soft)}
+.chip.cat-parttime{background:var(--green-soft)}
+.chip.cat-graduate{background:var(--rust-soft)}
+.chip.warn{background:var(--red-soft);color:var(--red);font-weight:600}
+.chip.due{background:var(--rust-soft);color:var(--rust);font-weight:600}
+.score{font-size:12px;font-weight:700;color:var(--navy);background:var(--blue-soft);border-radius:8px;padding:3px 8px;white-space:nowrap}
+.actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.actions select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.details{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.details textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);resize:vertical}
+.details h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hist{list-style:none;margin:0;padding:0;font-size:13px}
+.hist li{padding:3px 0;border-bottom:1px solid var(--line)}
+.desc{grid-column:1/-1;font-size:13.5px;color:var(--muted);max-height:220px;overflow:auto;white-space:pre-wrap}
+.saved-note{font-size:12px;color:var(--green);margin-left:6px}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.login{max-width:360px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow)}
+.login h1{margin:0 0 4px;color:var(--navy);font-size:22px}
+.login p{color:var(--muted);margin:0 0 16px;font-size:14px}
+.login input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);margin-bottom:10px}
+.err{color:var(--red);font-size:13px;min-height:18px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:20px;width:min(520px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
+.form .full{grid-column:1/-1}
+.form input,.form select,.form textarea{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--bg);padding:9px 16px;border-radius:9px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .details{grid-template-columns:1fr}
+  .form{grid-template-columns:1fr}
+  .wrap{padding:12px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="addDlg">
+  <form method="dialog" id="addForm">
+    <h3 style="margin:0 0 12px;color:var(--navy)">Add a job</h3>
+    <div class="form">
+      <label class="full">Link to posting<input name="url" type="url" placeholder="https://"></label>
+      <label class="full">Job title *<input name="title" required></label>
+      <label>Company<input name="company"></label>
+      <label>Location<input name="location" placeholder="Toronto, ON"></label>
+      <label>Category<select name="category"><option value="fulltime">Full-time</option><option value="parttime">Part-time</option><option value="graduate">Graduate / new grad</option></select></label>
+      <label>Stage<select name="stage"><option value="saved">Saved</option><option value="applied">Applied</option></select></label>
+      <label>Closing date<input name="closing_date" type="date"></label>
+      <label>Reference number<input name="reference"></label>
+      <label class="full">Notes<textarea name="notes" rows="3"></textarea></label>
+    </div>
+    <div class="err" id="addErr"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn primary" id="addSubmit" value="ok">Save job</button>
+    </div>
+  </form>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(() => {
+"use strict";
+const STAGES = [
+  ["new","New"],["saved","Saved"],["applied","Applied"],["assessment","Online assessment"],
+  ["interview_1","Interview 1"],["interview_2","Interview 2"],["interview_final","Final interview"],
+  ["offer","Offer"],["accepted","Accepted"],["rejected","Rejected"],["withdrawn","Withdrawn"],
+  ["no_response","No response"],["dismissed","Not interested"]];
+const STAGE_LABEL = Object.fromEntries(STAGES);
+const PIPELINE = ["applied","assessment","interview_1","interview_2","interview_final","offer"];
+const CLOSED = ["accepted","rejected","withdrawn","no_response"];
+const ACTIVE_FOLLOWUP = ["applied","assessment","interview_1","interview_2","interview_final"];
+const CAT_LABEL = {fulltime:"Full-time",parttime:"Part-time",graduate:"Graduate"};
+const FOLLOWUP_DAYS = 14, DEADLINE_DAYS = 3;
+const COLS = "id,title,company,location,category,job_type,level,salary,date_posted,closing_date,url,reference,source,sources,tags,score,strong,stage,stage_changed_at,applied_at,notes,manual,first_seen,last_seen";
+
+const $app = document.getElementById("app");
+const state = {jobs:[], tab:"new", q:"", cat:"", strongOnly:false, sort:"score", open:new Set(), lastRun:null, user:null};
+const cfg = window.TRACKER_CONFIG || {};
+let sb = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const daysSince = d => d ? (Date.now() - new Date(d).getTime()) / 864e5 : Infinity;
+const daysUntil = d => {
+  if (!d) return Infinity;
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.round((new Date(d + "T00:00:00") - t) / 864e5);
+};
+const fmtDate = d => d ? new Date(d.length === 10 ? d + "T00:00:00" : d).toLocaleDateString("en-CA",{month:"short",day:"numeric"}) : "";
+const ago = d => { const n = Math.floor(daysSince(d)); return n <= 0 ? "today" : n === 1 ? "1 day ago" : `${n} days ago`; };
+function toast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("on"), 1800); }
+
+// ---------------- auth ----------------
+function renderLogin(err=""){
+  $app.innerHTML = `<form class="login" id="loginForm">
+    <h1>Job Tracker</h1><p>Sign in to see your postings and applications.</p>
+    <input name="email" type="email" placeholder="Email" autocomplete="username" required>
+    <input name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+    <div class="err">${esc(err)}</div>
+    <button class="btn primary" style="width:100%">Sign in</button></form>`;
+  document.getElementById("loginForm").onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const {error} = await sb.auth.signInWithPassword({email:f.get("email"), password:f.get("password")});
+    if (error) renderLogin(error.message); else boot();
+  };
+}
+
+// ---------------- data ----------------
+async function load(){
+  const all = []; let from = 0;
+  for (;;) {
+    const {data, error} = await sb.from("jobs").select(COLS).order("first_seen",{ascending:false}).range(from, from + 999);
+    if (error) throw error;
+    all.push(...data);
+    if (data.length < 1000) break;
+    from += 1000;
+  }
+  state.jobs = all;
+  const {data:runs} = await sb.from("runs").select("finished_at,added,errors").order("id",{ascending:false}).limit(1);
+  state.lastRun = runs && runs[0] || null;
+}
+
+async function setStage(job, stage){
+  const prev = job.stage;
+  job.stage = stage; job.stage_changed_at = new Date().toISOString();
+  if (stage === "applied" && !job.applied_at) job.applied_at = job.stage_changed_at;
+  render();
+  const {error} = await sb.from("jobs").update({stage}).eq("id", job.id);
+  if (error) { job.stage = prev; render(); toast("Could not save: " + error.message); return; }
+  toast(`Moved to ${STAGE_LABEL[stage]}`);
+  if (state.open.has(job.id)) loadDetails(job);
+}
+
+let noteTimers = {};
+function saveNote(job, text){
+  job.notes = text;
+  clearTimeout(noteTimers[job.id]);
+  noteTimers[job.id] = setTimeout(async () => {
+    const {error} = await sb.from("jobs").update({notes:text}).eq("id", job.id);
+    const el = document.querySelector(`[data-saved="${job.id}"]`);
+    if (el) el.textContent = error ? "not saved" : "saved";
+  }, 700);
+}
+
+async function loadDetails(job){
+  const box = document.querySelector(`[data-details="${job.id}"]`);
+  if (!box) return;
+  const [{data:hist}, {data:full}] = await Promise.all([
+    sb.from("stage_history").select("stage,changed_at").eq("job_id", job.id).order("changed_at"),
+    sb.from("jobs").select("description").eq("id", job.id).single()]);
+  const h = box.querySelector(".hist");
+  if (h) h.innerHTML = (hist || []).map(x => `<li>${esc(STAGE_LABEL[x.stage] || x.stage)} <span style="color:var(--muted)">${new Date(x.changed_at).toLocaleDateString("en-CA",{month:"short",day:"numeric",year:"numeric"})}</span></li>`).join("") || "<li>No changes yet</li>";
+  const d = box.querySelector(".desc");
+  if (d) d.textContent = (full && full.description) || "No description saved. Open the posting for details.";
+}
+
+// ---------------- view helpers ----------------
+function inTab(j){
+  switch (state.tab){
+    case "new": return j.stage === "new";
+    case "saved": return j.stage === "saved";
+    case "pipeline": return PIPELINE.includes(j.stage);
+    case "closed": return CLOSED.includes(j.stage);
+    case "dismissed": return j.stage === "dismissed";
+    default: return j.stage !== "dismissed";
+  }
+}
+function visible(){
+  const q = state.q.trim().toLowerCase();
+  let list = state.jobs.filter(j => inTab(j)
+    && (!state.cat || j.category === state.cat)
+    && (!state.strongOnly || j.strong)
+    && (!q || [j.title,j.company,j.location,(j.tags||[]).join(" "),j.notes].join(" ").toLowerCase().includes(q)));
+  const by = {
+    score: (a,b) => (b.strong - a.strong) || (b.score - a.score) || (new Date(b.first_seen) - new Date(a.first_seen)),
+    newest: (a,b) => new Date(b.date_posted || b.first_seen) - new Date(a.date_posted || a.first_seen),
+    closing: (a,b) => daysUntil(a.closing_date) - daysUntil(b.closing_date),
+    updated: (a,b) => new Date(b.stage_changed_at) - new Date(a.stage_changed_at),
+  };
+  return list.sort(by[state.sort] || by.score);
+}
+function stats(){
+  const J = state.jobs;
+  const everApplied = J.filter(j => j.applied_at || PIPELINE.includes(j.stage) || CLOSED.includes(j.stage));
+  const responded = everApplied.filter(j => !["applied","no_response","withdrawn"].includes(j.stage));
+  return {
+    newWeek: J.filter(j => j.stage === "new" && daysSince(j.first_seen) <= 7).length,
+    saved: J.filter(j => j.stage === "saved").length,
+    applied: everApplied.length,
+    interviewing: J.filter(j => ["assessment","interview_1","interview_2","interview_final"].includes(j.stage)).length,
+    offers: J.filter(j => ["offer","accepted"].includes(j.stage)).length,
+    rate: everApplied.length ? Math.round(100 * responded.length / everApplied.length) + "%" : "n/a",
+  };
+}
+function count(tab){ const t = state.tab; state.tab = tab; const n = state.jobs.filter(inTab).length; state.tab = t; return n; }
+
+function card(j){
+  const due = daysUntil(j.closing_date);
+  const chips = [`<span class="chip cat-${j.category}">${CAT_LABEL[j.category] || j.category}</span>`];
+  (j.tags || []).forEach(t => chips.push(`<span class="chip">${esc(t)}</span>`));
+  if (j.level && !["mid","graduate"].includes(j.level)) chips.push(`<span class="chip">${esc(j.level)}</span>`);
+  if (j.salary) chips.push(`<span class="chip">${esc(j.salary)}</span>`);
+  if (j.closing_date) chips.push(`<span class="chip ${due <= DEADLINE_DAYS && due >= 0 ? "warn" : ""}">${due < 0 ? "Closed" : "Closes"} ${fmtDate(j.closing_date)}${due >= 0 && due <= DEADLINE_DAYS ? ` (${due === 0 ? "today" : due + "d"})` : ""}</span>`);
+  if (ACTIVE_FOLLOWUP.includes(j.stage) && daysSince(j.stage_changed_at) >= FOLLOWUP_DAYS)
+    chips.push(`<span class="chip due">Follow up: ${Math.floor(daysSince(j.stage_changed_at))} days, no change</span>`);
+  const srcs = (j.sources && j.sources.length ? j.sources : [j.source]).filter(Boolean).join(", ");
+  const meta = [j.company, j.location].filter(Boolean).map(esc).join(" · ");
+  const when = j.manual ? "added by you" : `found ${ago(j.first_seen)}${j.date_posted ? ", posted " + fmtDate(j.date_posted) : ""}`;
+  const quick = [];
+  if (j.stage === "new") { quick.push(`<button class="btn small" data-act="saved">Save</button>`, `<button class="btn small" data-act="applied">Applied</button>`, `<button class="btn small ghost" data-act="dismissed">Not interested</button>`); }
+  else if (j.stage === "saved") { quick.push(`<button class="btn small" data-act="applied">Mark applied</button>`); }
+  else if (j.stage === "dismissed") { quick.push(`<button class="btn small" data-act="new">Restore</button>`); }
+  const open = state.open.has(j.id);
+  return `<div class="card ${j.strong ? "strong" : ""}" data-id="${j.id}">
+    <div class="row1"><div class="main">
+      ${j.strong ? '<span class="star" title="Strong match">★</span> ' : ""}<a class="title" href="${esc(j.url || "#")}" target="_blank" rel="noopener">${esc(j.title)}</a>
+      <div class="meta">${meta}${j.reference ? ` · ref ${esc(j.reference)}` : ""}</div>
+      <div class="chips">${chips.join("")}</div>
+    </div><span class="score" title="Match score out of 100">${j.score}</span></div>
+    <div class="actions">
+      <select data-stage aria-label="Stage">${STAGES.map(([v,l]) => `<option value="${v}" ${v === j.stage ? "selected" : ""}>${l}</option>`).join("")}</select>
+      ${quick.join("")}
+      <button class="btn small ghost" data-toggle>${open ? "Hide details" : "Notes and details"}${j.notes ? " •" : ""}</button>
+      <span class="meta" style="margin-left:auto;font-size:12px">${esc(when)} · ${esc(srcs)}</span>
+    </div>
+    ${open ? `<div class="details" data-details="${j.id}">
+      <div><h4>Notes <span class="saved-note" data-saved="${j.id}"></span></h4><textarea data-notes placeholder="Contacts, referrals, interview questions...">${esc(j.notes)}</textarea></div>
+      <div><h4>Stage history</h4><ul class="hist"><li>Loading...</li></ul></div>
+      <div class="desc">Loading description...</div></div>` : ""}
+  </div>`;
+}
+
+// ---------------- render ----------------
+function render(){
+  const s = stats(), list = visible();
+  const last = state.lastRun && state.lastRun.finished_at ? `Last checked ${new Date(state.lastRun.finished_at).toLocaleString("en-CA",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}` : "Not checked yet";
+  const tabs = [["new","New"],["saved","Saved"],["pipeline","Applications"],["closed","Closed"],["all","All"],["dismissed","Not interested"]];
+  let body;
+  if (!list.length) body = `<div class="empty">${state.tab === "new" ? "No new postings right now. The next check runs tomorrow morning." : "Nothing here yet."}</div>`;
+  else if (state.tab === "pipeline" || state.tab === "closed") {
+    const order = state.tab === "pipeline" ? PIPELINE.slice().reverse() : CLOSED;
+    body = order.map(st => { const g = list.filter(j => j.stage === st); return g.length ? `<div class="group-h">${STAGE_LABEL[st]} (${g.length})</div>` + g.map(card).join("") : ""; }).join("");
+  } else body = list.slice(0, 300).map(card).join("") + (list.length > 300 ? `<div class="empty">Showing 300 of ${list.length}. Use search or filters to narrow down.</div>` : "");
+
+  $app.innerHTML = `<div class="wrap">
+    <header class="top"><h1>Job Tracker</h1><span class="sub">${esc(last)}</span><span class="spacer"></span>
+      <button class="btn" id="addBtn">+ Add job</button><button class="btn ghost" id="refreshBtn">Refresh</button><button class="btn ghost" id="outBtn">Sign out</button></header>
+    <section class="stats">
+      <div class="stat"><b>${s.newWeek}</b><span>New this week</span></div>
+      <div class="stat"><b>${s.saved}</b><span>Saved</span></div>
+      <div class="stat"><b>${s.applied}</b><span>Applied</span></div>
+      <div class="stat"><b>${s.interviewing}</b><span>Interviewing</span></div>
+      <div class="stat"><b>${s.offers}</b><span>Offers</span></div>
+      <div class="stat"><b>${s.rate}</b><span>Response rate</span></div>
+    </section>
+    <nav class="tabs">${tabs.map(([k,l]) => `<button class="tab ${state.tab === k ? "on" : ""}" data-tab="${k}">${l}<span class="n">${count(k)}</span></button>`).join("")}</nav>
+    <div class="filters">
+      <input type="search" id="q" placeholder="Search title, company, notes" value="${esc(state.q)}">
+      <select id="cat"><option value="">All types</option><option value="fulltime" ${state.cat==="fulltime"?"selected":""}>Full-time</option><option value="parttime" ${state.cat==="parttime"?"selected":""}>Part-time</option><option value="graduate" ${state.cat==="graduate"?"selected":""}>Graduate</option></select>
+      <select id="sort"><option value="score" ${state.sort==="score"?"selected":""}>Best match</option><option value="newest" ${state.sort==="newest"?"selected":""}>Newest</option><option value="closing" ${state.sort==="closing"?"selected":""}>Closing soon</option><option value="updated" ${state.sort==="updated"?"selected":""}>Recently updated</option></select>
+      <label><input type="checkbox" id="strong" ${state.strongOnly ? "checked" : ""}> Strong only</label>
+    </div>
+    <main>${body}</main></div>`;
+  bind();
+  state.open.forEach(id => { const j = state.jobs.find(x => x.id === id); if (j) loadDetails(j); });
+}
+
+function bind(){
+  $app.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { state.tab = b.dataset.tab; savePrefs(); render(); });
+  const q = document.getElementById("q");
+  q.oninput = () => { state.q = q.value; const pos = q.selectionStart; render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(pos,pos); };
+  document.getElementById("cat").onchange = e => { state.cat = e.target.value; savePrefs(); render(); };
+  document.getElementById("sort").onchange = e => { state.sort = e.target.value; savePrefs(); render(); };
+  document.getElementById("strong").onchange = e => { state.strongOnly = e.target.checked; savePrefs(); render(); };
+  document.getElementById("addBtn").onclick = () => { document.getElementById("addErr").textContent = ""; document.getElementById("addForm").reset(); document.getElementById("addDlg").showModal(); };
+  document.getElementById("refreshBtn").onclick = async () => { await load(); render(); toast("Updated"); };
+  document.getElementById("outBtn").onclick = async () => { await sb.auth.signOut(); renderLogin(); };
+  $app.querySelectorAll(".card").forEach(c => {
+    const job = state.jobs.find(j => j.id === c.dataset.id);
+    c.querySelector("[data-stage]").onchange = e => setStage(job, e.target.value);
+    c.querySelectorAll("[data-act]").forEach(b => b.onclick = () => setStage(job, b.dataset.act));
+    c.querySelector("[data-toggle]").onclick = () => { state.open.has(job.id) ? state.open.delete(job.id) : state.open.add(job.id); render(); };
+    const ta = c.querySelector("[data-notes]");
+    if (ta) ta.oninput = () => { const el = c.querySelector(`[data-saved="${job.id}"]`); if (el) el.textContent = "saving..."; saveNote(job, ta.value); };
+  });
+}
+
+function savePrefs(){ try { localStorage.setItem("jt-prefs", JSON.stringify({tab:state.tab,cat:state.cat,sort:state.sort,strongOnly:state.strongOnly})); } catch(e){} }
+function loadPrefs(){ try { Object.assign(state, JSON.parse(localStorage.getItem("jt-prefs") || "{}")); } catch(e){} }
+
+document.getElementById("addForm").addEventListener("submit", async e => {
+  if (e.submitter && e.submitter.value === "cancel") return;
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target));
+  const row = {
+    dedupe_key: "manual:" + (f.url || `${f.company}|${f.title}`).toLowerCase().trim() + ":" + Date.now(),
+    title: f.title.trim(), company: f.company.trim(), location: f.location.trim(), category: f.category,
+    url: f.url.trim() || null, reference: f.reference.trim(), closing_date: f.closing_date || null,
+    notes: f.notes, stage: f.stage, manual: true, source: "manual", sources: ["manual"], score: 0,
+  };
+  const btn = document.getElementById("addSubmit"); btn.disabled = true;
+  const {data, error} = await sb.from("jobs").insert(row).select(COLS).single();
+  btn.disabled = false;
+  if (error) { document.getElementById("addErr").textContent = error.message; return; }
+  state.jobs.unshift(data);
+  document.getElementById("addDlg").close();
+  state.tab = row.stage === "applied" ? "pipeline" : "saved";
+  render(); toast("Job added");
+});
+
+async function boot(){
+  const {data:{session}} = await sb.auth.getSession();
+  if (!session) return renderLogin();
+  $app.innerHTML = '<div class="empty">Loading your jobs...</div>';
+  try { await load(); } catch (err) { $app.innerHTML = `<div class="empty">Could not load: ${esc(err.message || err)}</div>`; return; }
+  render();
+}
+
+if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || !window.supabase) {
+  $app.innerHTML = `<div class="login"><h1>Almost there</h1><p>Add your Supabase project URL and public key to <code>docs/config.js</code>, then reload this page.</p></div>`;
+} else {
+  sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  loadPrefs();
+  boot();
+}
+})();
+</script>
+</body>
+</html>
