@@ -1,12 +1,16 @@
 """Tiny client for the Supabase REST interface (no extra library needed)."""
 from __future__ import annotations
 
+import re
+
 import requests
 
 
 class Supabase:
     def __init__(self, url: str, key: str):
-        self.base = url.rstrip("/") + "/rest/v1"
+        # accept the URL with or without a trailing "/rest/v1"
+        url = re.sub(r"/rest/v1/?$", "", url.strip().rstrip("/"))
+        self.base = url + "/rest/v1"
         self.headers = {"apikey": key, "Content-Type": "application/json"}
         # Older keys are JWTs and must also be sent as a bearer token.
         # Newer "sb_secret_..." keys go in the apikey header only.
