@@ -107,7 +107,9 @@ def send_email(subject: str, body_html: str) -> bool:
                 smtp = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
                 smtp.ehlo(); smtp.starttls(); smtp.ehlo()
             with smtp:
-                smtp.login(sender, password)
+                smtp.ehlo_or_helo_if_needed()
+                smtp.user, smtp.password = sender, password
+                smtp.auth("PLAIN", smtp.auth_plain)   # one clear answer, no fallbacks
                 smtp.sendmail(sender, [to], msg.as_string())
             return True
         except smtplib.SMTPAuthenticationError as exc:

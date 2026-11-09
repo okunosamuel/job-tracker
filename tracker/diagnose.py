@@ -59,11 +59,14 @@ def email():
                 smtp = smtplib.SMTP(host, port, timeout=30)
                 stage = "starttls"
                 smtp.ehlo(); smtp.starttls(); smtp.ehlo()
-            smtp.set_debuglevel(1)
             stage = "login"
-            smtp.login(sender, pw)
+            smtp.ehlo_or_helo_if_needed()
+            smtp.user, smtp.password = sender, pw
+            smtp.auth("PLAIN", smtp.auth_plain)   # one clear answer, no fallbacks
             print(port, "LOGIN OK")
             smtp.quit()
+        except smtplib.SMTPAuthenticationError as exc:
+            print(port, "Gmail rejected the address/app password:", exc.smtp_code)
         except Exception as exc:
             print(port, f"failed at {stage}:", type(exc).__name__, str(exc)[:300])
 
