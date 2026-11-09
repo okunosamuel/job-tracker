@@ -1,14 +1,19 @@
 {
-  "started_at": "2026-11-09T18:54:42.137394+00:00",
-  "finished_at": "2026-11-09T18:55:02.635415+00:00",
-  "found": 0,
-  "added": 0,
+  "started_at": "2026-11-09T19:09:43.205202+00:00",
+  "finished_at": "2026-11-09T19:24:56.088691+00:00",
+  "found": 199,
+  "added": 25,
   "removed": 0,
   "source_counts": {
-    "kpmg": 0,
-    "deloitte": 55
+    "kpmg": 261,
+    "deloitte": 55,
+    "workday": 907,
+    "adzuna": 284,
+    "jobbank": 201,
+    "indeed": 312,
+    "linkedin": 665
   },
   "errors": [
-    "[email] port 465: SMTPServerDisconnected: Connection unexpectedly closed; port 587: SMTPServerDisconnected: Connection unexpectedly closed"
+    "[email] Gmail rejected the login: check GMAIL_ADDRESS is the account the app password was made on (535)"
   ]
 }
