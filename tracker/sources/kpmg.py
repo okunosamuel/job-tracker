@@ -23,6 +23,10 @@ def fetch(log) -> list[RawJob]:
     s = session()
     jobs: list[RawJob] = []
     seen: set[str] = set()
+    try:
+        s.get(f"{config.KPMG_BASE}/professionals/jobs", timeout=30)
+    except Exception:
+        pass
     for term in config.KPMG_TERMS:
         try:
             r = s.get(f"{config.KPMG_BASE}/api/jobs",

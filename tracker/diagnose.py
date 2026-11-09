@@ -17,6 +17,8 @@ from .sources import deloitte, session
 def kpmg():
     print("== KPMG ==")
     s = session()
+    r0 = s.get(f"{config.KPMG_BASE}/professionals/jobs", timeout=30)
+    print("jobs page:", r0.status_code, "cookies:", list(s.cookies.keys()))
     for params in ({"keywords": "cyber", "limit": 5, "page": 1}, {"keywords": "cyber"}, {}):
         try:
             r = s.get(f"{config.KPMG_BASE}/api/jobs", params=params, timeout=30,
@@ -57,6 +59,7 @@ def email():
                 smtp = smtplib.SMTP(host, port, timeout=30)
                 stage = "starttls"
                 smtp.ehlo(); smtp.starttls(); smtp.ehlo()
+            smtp.set_debuglevel(1)
             stage = "login"
             smtp.login(sender, pw)
             print(port, "LOGIN OK")

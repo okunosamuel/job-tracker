@@ -200,10 +200,12 @@ def classify(raw: RawJob) -> Job | None:
     desc = clean_text(raw.description)
     loc = raw.location or ""
     remote = raw.is_remote or bool(re.search(r"\bremote\b", loc, re.I))
-    if FOREIGN_RE.search(loc) and "canada" not in loc.lower():
+    prov = province_of(loc)
+    # ", CA" after a province means Canada, so only check for other countries
+    # when no Canadian province or city was found
+    if prov is None and FOREIGN_RE.search(loc) and "canada" not in loc.lower():
         return None
 
-    prov = province_of(loc)
     is_grad = bool(GRADUATE_RE.search(title)) and not NOT_GRADUATE_RE.search(title)
     is_part = raw.job_type == "parttime" or bool(PARTTIME_RE.search(title))
     if not is_part and raw.job_type is None and raw.bucket == "parttime":

@@ -42,6 +42,13 @@ def test_fulltime_remote_canada_kept():
     assert job("Cybersecurity Analyst", location="Remote, Canada", is_remote=True)
 
 
+def test_canada_written_as_ca():
+    j = job("Cyber Agentic AI Analyst", company="Deloitte", location="Toronto, ON, CA, M5H 0A9")
+    assert j and j.category == "fulltime"
+    assert job("SOC Analyst", location="Mississauga, ON, CA")
+    assert job("SOC Analyst", location="San Jose, CA") is None
+
+
 def test_foreign_dropped():
     assert job("SOC Analyst", location="Austin, TX") is None
     assert job("SOC Analyst", location="Bengaluru, India") is None
