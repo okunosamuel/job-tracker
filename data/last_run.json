@@ -1,1 +1,30 @@
-{"note": "Replaced by the daily run."}
+{
+  "started_at": "2026-11-09T18:35:57.815625+00:00",
+  "finished_at": "2026-11-09T18:53:01.812769+00:00",
+  "found": 177,
+  "added": 177,
+  "removed": 0,
+  "source_counts": {
+    "kpmg": 0,
+    "deloitte": 55,
+    "workday": 903,
+    "adzuna": 284,
+    "jobbank": 201,
+    "indeed": 316,
+    "linkedin": 680,
+    "glassdoor": 0,
+    "google": 0
+  },
+  "errors": [
+    "[kpmg] 'cyber': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=cyber&limit=100&page=1&sortBy=posted_date&descending=tr",
+    "[kpmg] 'technology risk': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=technology+risk&limit=100&page=1&sortBy=posted_date&des",
+    "[kpmg] 'IT audit': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=IT+audit&limit=100&page=1&sortBy=posted_date&descending",
+    "[kpmg] 'risk consulting': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=risk+consulting&limit=100&page=1&sortBy=posted_date&des",
+    "[kpmg] 'privacy': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=privacy&limit=100&page=1&sortBy=posted_date&descending=",
+    "[kpmg] 'graduate': HTTPSConnectionPool(host='careers.kpmg.ca', port=443): Max retries exceeded with url: /api/jobs?keywords=graduate&limit=100&page=1&sortBy=posted_date&descending",
+    "[greenhouse:Wealthsimple] 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/wealthsimple/jobs?content=true",
+    "[greenhouse:Arctic Wolf] 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/arcticwolf/jobs?content=true",
+    "[lever:eSentire] 404 Client Error: Not Found for url: https://api.lever.co/v0/postings/esentire?mode=json",
+    "[email] Connection unexpectedly closed"
+  ]
+}
