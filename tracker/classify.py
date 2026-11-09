@@ -44,9 +44,10 @@ ROLE_PATTERNS: dict[str, list[str]] = {
         r"\binfosec\b",
     ],
     "Network": [
-        r"\bnetwork(ing)?\s+(admin|administrator|technician|analyst|engineer|specialist|support|operations|associate)\b",
+        r"\bnetwork(ing)?\s+(admin|administrator|technician|analyst|engineer|specialist|support|associate)\b",
+        r"\bnetwork operations (cent|analyst|technician|engineer|specialist)",
         r"\bnoc\b",
-        r"\bnetwork\b",
+        r"\bnetwork (security|infrastructure)\b",
     ],
     "IT Support": [
         r"\bhelp ?desk\b",
@@ -57,7 +58,7 @@ ROLE_PATTERNS: dict[str, list[str]] = {
         r"\bsystems? administrator\b",
         r"\bsysadmin\b",
         r"\btier ?[12]\b.*\bsupport\b",
-        r"\bsupport (analyst|technician|specialist)\b",
+        r"\b(it|technical|desktop|computer) support\b",
     ],
     "Retail Tech": [
         r"\bgeek squad\b",
@@ -179,9 +180,14 @@ def french_required(text: str) -> bool:
     return bool(FRENCH_REQUIRED_RE.search(text or ""))
 
 
+MID_SENIOR_RE = re.compile(r"\bsenior (consultant|associate|analyst)\b", re.I)
+
+
 def level_of(title: str, is_grad: bool) -> str:
     if is_grad:
         return "graduate"
+    if MID_SENIOR_RE.search(title) and not re.search(r"\b(manager|lead|architect)\b", title, re.I):
+        return "mid"
     if ENTRY_RE.search(title) and not SENIOR_RE.search(title):
         return "entry"
     if SENIOR_RE.search(title):
@@ -262,7 +268,8 @@ def classify(raw: RawJob) -> Job | None:
         score += 10
     score = min(score, 100)
 
-    strong = target or (bool(TOP_TAGS & set(tags)) and location_ok and level in ("graduate", "entry"))
+    strong = (target and level != "senior") or \
+             (bool(TOP_TAGS & set(tags)) and location_ok and level in ("graduate", "entry"))
     if category == "parttime":
         strong = target or ("IT Support" in tags and location_ok)
 

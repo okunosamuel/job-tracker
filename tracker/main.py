@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import config, notify
-from .classify import classify, merge_duplicates
+from .classify import classify, dedupe_key, merge_duplicates
 from .sources import adzuna, boards, deloitte, jobbank, jobspy_src, kpmg, workday
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -63,6 +63,7 @@ def main(argv: list[str]) -> int:
     log = RunLog()
     raws = collect(log, only)
     classified = [j for j in (classify(r) for r in raws) if j]
+    raw_keys = {dedupe_key(r.company, r.title, r.location) for r in raws}
     jobs = merge_duplicates(classified)
     print(f"{len(raws)} raw -> {len(classified)} relevant -> {len(jobs)} unique", flush=True)
 
@@ -104,7 +105,13 @@ def main(argv: list[str]) -> int:
     removed += db.delete("jobs", {"stage": removable, "manual": "is.false",
                                   "first_seen": f"lt.{iso(now - timedelta(days=config.STALE_DAYS))}",
                                   "last_seen": f"lt.{iso(now - timedelta(days=config.UNSEEN_DAYS))}"})
-    print(f"removed {removed} expired", flush=True)
+    # postings still listed but no longer matching the rules (after a rule change)
+    keep = {j.dedupe_key for j in jobs}
+    stale = sorted(k for k in raw_keys - keep if k in existing and existing[k]["stage"] == "new")
+    for i in range(0, len(stale), 40):
+        chunk = ",".join('"' + k.replace('"', "") + '"' for k in stale[i:i + 40])
+        removed += db.delete("jobs", {"stage": "eq.new", "dedupe_key": f"in.({chunk})"})
+    print(f"removed {removed} expired or no longer matching", flush=True)
 
     # ---- reminders ----
     cols = "id,title,company,url,closing_date,stage"

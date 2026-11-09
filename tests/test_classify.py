@@ -138,3 +138,23 @@ def test_dedupe_same_job_two_sources():
 
 def test_dedupe_key_ignores_part_time_word():
     assert dedupe_key("X", "Help Desk (Part-Time)", "Ajax, ON") == dedupe_key("X", "Help Desk", "Ajax")
+
+
+# ---------- rules tightened after the first real runs ----------
+def test_supply_chain_network_not_networking():
+    assert job("Senior Consultant, Supply Chain & Network Operations", company="Deloitte") is None
+
+
+def test_non_it_support_specialist_dropped():
+    assert job("Conflict Group Support Specialist", company="Miller Thomson LLP") is None
+
+
+def test_big4_manager_not_strong_but_senior_consultant_is():
+    m = job("Manager, IT Risk Services", company="KPMG", location="Toronto, Canada")
+    s = job("Senior Consultant - IT Risk Services", company="KPMG", location="Toronto, Canada")
+    assert m and not m.strong and m.level == "senior"
+    assert s and s.strong and s.level == "mid"
+
+
+def test_network_security_still_tagged():
+    assert "Network" in job("Network Security Analyst").tags
