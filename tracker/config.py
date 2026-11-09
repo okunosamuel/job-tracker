@@ -110,7 +110,8 @@ QUEBEC_MARKERS = [
 # ---------------------------------------------------------------------------
 # Sources that need no keys. Failures are logged and skipped, never fatal.
 # ---------------------------------------------------------------------------
-JOBSPY_SITES = ["indeed", "linkedin", "glassdoor", "google"]
+# Glassdoor (403) and Google Jobs (no data) block GitHub's servers, so they are off.
+JOBSPY_SITES = ["indeed", "linkedin"]
 JOBSPY_RESULTS_PER_SEARCH = 25
 
 # Adzuna free plan: one run uses about 29 searches a day (about 900 a month).
@@ -139,13 +140,9 @@ DELOITTE_BASE = "https://careers.deloitte.ca"
 DELOITTE_TERMS = ["cyber", "risk", "IT audit", "privacy", "new grad"]
 
 # Greenhouse and Lever job boards (company name, board token)
-GREENHOUSE_BOARDS = [
-    ("Wealthsimple", "wealthsimple"),
-    ("Arctic Wolf", "arcticwolf"),
-]
-LEVER_BOARDS = [
-    ("eSentire", "esentire"),
-]
+# Add ("Company", "board-token") pairs here when you find a company that uses them.
+GREENHOUSE_BOARDS: list[tuple[str, str]] = []
+LEVER_BOARDS: list[tuple[str, str]] = []
 
 # Job Bank (Government of Canada)
 JOBBANK_ENABLED = True

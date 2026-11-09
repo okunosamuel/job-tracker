@@ -90,17 +90,32 @@ def digest_html(new_jobs: list[dict], deadlines: list[dict], followups: list[dic
 
 
 def send_email(subject: str, body_html: str) -> bool:
-    sender, password = os.getenv("GMAIL_ADDRESS"), os.getenv("GMAIL_APP_PASSWORD")
-    to = os.getenv("ALERT_EMAIL") or sender
+    sender = (os.getenv("GMAIL_ADDRESS") or "").strip()
+    password = "".join((os.getenv("GMAIL_APP_PASSWORD") or "").split())
+    to = (os.getenv("ALERT_EMAIL") or "").strip() or sender
     if not sender or not password or not to:
         return False
     msg = MIMEMultipart("alternative")
     msg["Subject"], msg["From"], msg["To"] = subject, f"Job Tracker <{sender}>", to
     msg.attach(MIMEText(body_html, "html", "utf-8"))
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as smtp:
-        smtp.login(sender, password.replace(" ", ""))
-        smtp.sendmail(sender, [to], msg.as_string())
-    return True
+    errors = []
+    for port in (465, 587):
+        try:
+            if port == 465:
+                smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30)
+            else:
+                smtp = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
+                smtp.ehlo(); smtp.starttls(); smtp.ehlo()
+            with smtp:
+                smtp.login(sender, password)
+                smtp.sendmail(sender, [to], msg.as_string())
+            return True
+        except smtplib.SMTPAuthenticationError as exc:
+            raise RuntimeError("Gmail rejected the login: check GMAIL_ADDRESS is the account the "
+                               f"app password was made on ({exc.smtp_code})") from exc
+        except Exception as exc:
+            errors.append(f"port {port}: {type(exc).__name__}: {exc}")
+    raise RuntimeError("; ".join(errors))
 
 
 def today_label() -> str:

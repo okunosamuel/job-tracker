@@ -132,15 +132,21 @@ def main(argv: list[str]) -> int:
     except Exception as exc:
         log.error("email", str(exc)[:200])
 
+    by_cat = Counter(r["category"] for r in new_rows)
+    print(f"new by category: {dict(by_cat)}; strong: {len(strong)}", flush=True)
+    for r in new_rows[:25]:
+        print(f"   {r['score']:>3} {'*' if r['strong'] else ' '} [{r['category']}] {r['title']} | "
+              f"{r.get('company')} | {r.get('location')} | {','.join(r['tags'])}", flush=True)
     if len(strong) <= 5:
         for r in strong:
             notify.push(f"Strong match: {r['title']}",
                         f"{r.get('company') or ''} · {r.get('location') or ''} · score {r['score']}",
                         click=r.get("url") or dashboard, tags=["star"])
     else:
-        notify.push(f"{len(strong)} strong matches today",
+        ok = notify.push(f"{len(strong)} strong matches today",
                     "\n".join(f"• {r['title']} ({r.get('company') or ''})" for r in strong[:10]),
                     click=dashboard, tags=["star"])
+        print("phone push sent" if ok else "phone push failed or NTFY_TOPIC missing", flush=True)
     reminder_lines = [f"Closes {r['closing_date']}: {r['title']}" for r in deadlines] + \
                      [f"Follow up: {r['title']} ({r.get('company') or ''})" for r in followups]
     if reminder_lines:

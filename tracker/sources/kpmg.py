@@ -26,12 +26,13 @@ def fetch(log) -> list[RawJob]:
     for term in config.KPMG_TERMS:
         try:
             r = s.get(f"{config.KPMG_BASE}/api/jobs",
-                      params={"keywords": term, "limit": 100, "page": 1, "sortBy": "posted_date",
-                              "descending": "true"}, timeout=30)
+                      params={"keywords": term, "limit": 100, "page": 1},
+                      headers={"Accept": "application/json, text/plain, */*",
+                               "Referer": f"{config.KPMG_BASE}/professionals/jobs"}, timeout=30)
             r.raise_for_status()
             items = r.json().get("jobs", [])
         except Exception as exc:
-            log.error("kpmg", f"'{term}': {str(exc)[:160]}")
+            log.error("kpmg", f"'{term}': {str(exc)[-300:]}")
             continue
         for it in items:
             d = it.get("data", it)
