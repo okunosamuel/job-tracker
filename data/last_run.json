@@ -1,17 +1,17 @@
 {
-  "started_at": "2026-11-09T19:09:43.205202+00:00",
-  "finished_at": "2026-11-09T19:24:56.088691+00:00",
-  "found": 199,
-  "added": 25,
-  "removed": 0,
+  "started_at": "2026-11-10T11:42:49.076159+00:00",
+  "finished_at": "2026-11-10T11:57:46.058022+00:00",
+  "found": 168,
+  "added": 36,
+  "removed": 9,
   "source_counts": {
-    "kpmg": 261,
+    "kpmg": 259,
     "deloitte": 55,
-    "workday": 907,
-    "adzuna": 284,
-    "jobbank": 201,
-    "indeed": 312,
-    "linkedin": 665
+    "workday": 900,
+    "adzuna": 224,
+    "jobbank": 209,
+    "indeed": 291,
+    "linkedin": 700
   },
   "errors": [
     "[email] Gmail rejected the login: check GMAIL_ADDRESS is the account the app password was made on (535)"
