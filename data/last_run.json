@@ -1,16 +1,16 @@
 {
-  "started_at": "2026-11-14T11:26:30.103564+00:00",
-  "finished_at": "2026-11-14T11:41:24.105015+00:00",
-  "found": 263,
-  "added": 54,
-  "removed": 7,
+  "started_at": "2026-11-15T11:28:12.601634+00:00",
+  "finished_at": "2026-11-15T11:43:01.753775+00:00",
+  "found": 176,
+  "added": 32,
+  "removed": 1,
   "source_counts": {
-    "kpmg": 263,
-    "deloitte": 56,
-    "workday": 891,
-    "adzuna": 419,
-    "jobbank": 173,
-    "indeed": 382,
+    "kpmg": 257,
+    "deloitte": 57,
+    "workday": 887,
+    "adzuna": 249,
+    "jobbank": 154,
+    "indeed": 328,
     "linkedin": 725
   },
   "errors": [
