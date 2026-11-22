@@ -1,17 +1,17 @@
 {
-  "started_at": "2026-11-21T11:35:35.192985+00:00",
-  "finished_at": "2026-11-21T11:45:35.046997+00:00",
-  "found": 159,
-  "added": 49,
-  "removed": 14,
+  "started_at": "2026-11-22T11:36:09.382412+00:00",
+  "finished_at": "2026-11-22T11:48:37.275562+00:00",
+  "found": 147,
+  "added": 32,
+  "removed": 0,
   "source_counts": {
     "kpmg": 263,
-    "deloitte": 57,
-    "workday": 0,
-    "adzuna": 233,
+    "deloitte": 51,
+    "workday": 65,
+    "adzuna": 211,
     "jobbank": 163,
-    "indeed": 397,
-    "linkedin": 395
+    "indeed": 343,
+    "linkedin": 515
   },
   "errors": [
     "[workday:RBC] 'cyber': HTTPSConnectionPool(host='rbc.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/rbc/RBCGLOBAL1/jobs (Caused by Res",
@@ -20,7 +20,10 @@
     "[workday:CIBC] 'cyber': HTTPSConnectionPool(host='cibc.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/cibc/search/jobs (Caused by Respo",
     "[workday:PwC] 'cyber': HTTPSConnectionPool(host='pwc.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/pwc/Global_Experienced_Careers/job",
     "[workday:PwC] 'cyber': HTTPSConnectionPool(host='pwc.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/pwc/Global_Campus_Careers/jobs (Ca",
-    "[workday:Manulife] 'cyber': HTTPSConnectionPool(host='manulife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/manulife/MFCJH_Jobs/jobs (Cau",
+    "[workday:Manulife] 'IT risk': HTTPSConnectionPool(host='manulife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/manulife/MFCJH_Jobs/jobs (Cau",
+    "[workday:Manulife] 'technology risk': HTTPSConnectionPool(host='manulife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/manulife/MFCJH_Jobs/jobs (Cau",
+    "[workday:Manulife] 'network': HTTPSConnectionPool(host='manulife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/manulife/MFCJH_Jobs/jobs (Cau",
+    "[workday:Manulife] 'service desk': HTTPSConnectionPool(host='manulife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/manulife/MFCJH_Jobs/jobs (Cau",
     "[workday:Sun Life] 'cyber': HTTPSConnectionPool(host='sunlife.wd3.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/sunlife/Experienced-Jobs/jobs ",
     "[email] Gmail rejected the login: check GMAIL_ADDRESS is the account the app password was made on (535)"
   ]
